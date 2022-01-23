@@ -1,16 +1,17 @@
-from threading import stack_size
 import streamlit as st
 import pandas as pd
 import numpy as np
+from CovidPage.covid import make_covid_dashboard
+
+
+st.set_page_config(layout="wide")
 
 
 def side_bar():
 
     sidebar = st.sidebar
 
-    sidebar.markdown(
-        "<h1 style='font-size: 165%;'>Menu</h1>", unsafe_allow_html=True,
-    )
+    sidebar.title("Menu")
 
     global add_selectbox
     add_selectbox = sidebar.selectbox(
@@ -23,7 +24,7 @@ def side_bar():
         Hello! My name is Brendan and I'm an avid data analyst & analytics engineer with a **HUGE** heart for data!!
         The below tabs represent my current portfolio of data apps, that I'm always looking for feedback on!!
 
-        Feel free to drop a note below with any crituques or recommendations to make them better 🙂
+        Feel free to drop a note below with any critiques or recommendations to make them better 🙂
         """
     )
 
@@ -42,6 +43,8 @@ def current_page():
     st.markdown(
         f"<h1 style='text-align: center;'>{add_selectbox}</h1>", unsafe_allow_html=True,
     )
+    if add_selectbox == "COVID Dashboard":
+        make_covid_dashboard()
 
 
 def main():
