@@ -1,8 +1,9 @@
+from cProfile import run
 from email import message
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time as dtime
 import time
 from gspread_pandas import Spread
 
@@ -73,32 +74,7 @@ def make_covid_dashboard():
         )
         exporting.empty()
 
-    current_time = datetime.now()
-    hour = current_time.hour
-    minute = current_time.minute
-
-    if hour == 9 and minute in range(55, 60):
-        progress = 0
-        my_bar = st.progress(progress)
-
-        raw_data = load_data()
-        progress += 1 / 3
-        my_bar.progress(progress)
-
-        cleaned_data = clean_data(raw_data)
-        progress += 1 / 3
-        my_bar.progress(progress)
-
-        export_data(cleaned_data)
-        progress += 1 / 3
-        my_bar.progress(progress)
-
-        success = st.success("Successfully exported data")
-        time.sleep(3)
-        success.empty()
-        my_bar.empty()
-
-    components.html(
+    dashboard = components.html(
         """
             <div class='tableauPlaceholder' id='viz1642887830638' style='position: relative'><object class='tableauViz'
             style='display:none;'>
@@ -129,3 +105,34 @@ def make_covid_dashboard():
         height=800,
     )
 
+    if datetime.now().time() >= dtime(9, 30):
+        run_date = datetime.now().date() + timedelta(days=1)
+        runtime = datetime.combine(run_date, dtime(9, 30))
+        print("Next Runtime: " + str(runtime))
+    else:
+        runtime = datetime.combine(datetime.now().date(), dtime(9, 30))
+        print("Next Runtime: " + str(runtime))
+
+    now = datetime.now()
+    if now >= runtime:
+        dashboard.empty()
+        progress = 0
+        my_bar = st.progress(progress)
+
+        raw_data = load_data()
+        progress += 1 / 3
+        my_bar.progress(progress)
+
+        cleaned_data = clean_data(raw_data)
+        progress += 1 / 3
+        my_bar.progress(progress)
+
+        export_data(cleaned_data)
+        progress += 1 / 3
+        my_bar.progress(progress)
+
+        success = st.success("Successfully exported data")
+        time.sleep(3)
+        success.empty()
+        my_bar.empty()
+        dashboard
